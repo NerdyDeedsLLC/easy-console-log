@@ -1,34 +1,60 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// @ts-nocheck
 const vscode = require('vscode');
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "console-log-debugger" is now active!');
+	let count = 0;
+	let disposable = vscode.commands.registerCommand('extension.addConsoleLog', function() {
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+		settings = vscode.workspace.getConfiguration().get('consoleLog.config');
+		if (!settings) {
+			settings = {
+				"javascript": `console.log("{count}: Line {line}, {current} ");`,
+				"php": `echo "{count}: Line {line}, {current}\\r\\n";`,
+				//"plaintext": `[DEBUG] {count}: Line {line}, {current}`,
+			};
+		}
+		if (!settings.hasOwnProperty('plaintext')) {
+			settings["plaintext"] = `[] {count}: Line {line}, {current}`;
+        }
+        
+        const activeEditor = vscode.window.activeTextEditor;
+        
+		if (activeEditor) {
+            count++;
+            
+			let line = activeEditor.selection.active.line;
+			const language = activeEditor.document.languageId;
+			const currentLineID = activeEditor.document.lineAt(line);
+			let currentLine = activeEditor.document.lineAt(line).text;
+            
+			if (!currentLine) {
+                currentLine = activeEditor.document.lineAt(line+1).text;
+                line = line + 2;
+			}
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
+			let current = currentLine.match(/(\w+)/) || currentLine;
+			if (current != currentLine) current = current[0];
+
+			let tabs = currentLine.match(/^([ \t]+)/) || "";
+			if (tabs !== "") tabs = tabs[0];
+			let text = settings[language] || settings["plaintext"];
+			text = tabs + text;
+			text = text.replace(/\{count\}/g, count);
+			text = text.replace(/\{line\}/g, (line + 1));
+			text = text.replace(/\{current\}/g, current);
+			vscode.window.activeTextEditor.edit((editBuilder) => {
+				editBuilder.insert(currentLineID.range.end, `\r\n${text}`);
+			});
+		}
 	});
 
 	context.subscriptions.push(disposable);
 }
 exports.activate = activate;
 
-// this method is called when your extension is deactivated
 function deactivate() {}
 
 module.exports = {
