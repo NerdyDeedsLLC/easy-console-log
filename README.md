@@ -9,8 +9,8 @@ Open settings.json and add these:
 ```
     "consoleLog.config" : {
         "javascript": "console.log('{count}: Line {line} {current}",
-        "php": "echo \"{count}: Line {line} {current}\\r\\n\";"
-        "plaintext": "[DEBUG] {count}: Line {line}, {current}",
+        "php": "echo \"{count}: Line {line} {current}\\r\\n\";",
+        "plaintext": "[DEBUG] {count}: Line {line}, {current}"
     } 
 ```
 ![](https://i.imgur.com/XLOrFqk.gif)
