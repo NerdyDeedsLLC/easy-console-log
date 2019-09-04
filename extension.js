@@ -18,35 +18,43 @@ function activate(context) {
 		}
 		if (!settings.hasOwnProperty('plaintext')) {
 			settings["plaintext"] = `[] {count}: Line {line}, {current}`;
-        }
-        
-        const activeEditor = vscode.window.activeTextEditor;
-        
+		}
+
+		const activeEditor = vscode.window.activeTextEditor;
+
 		if (activeEditor) {
-            count++;
-            
-			let line = activeEditor.selection.active.line;
-			const language = activeEditor.document.languageId;
-			const currentLineID = activeEditor.document.lineAt(line);
-			let currentLine = activeEditor.document.lineAt(line).text;
-            
-			if (!currentLine) {
-                currentLine = activeEditor.document.lineAt(line+1).text;
-                line = line + 2;
-			}
+			count++;
 
-			let current = currentLine.match(/(\w+)/) || currentLine;
+			const selection     = activeEditor.selection;
+			let   line          = activeEditor.selection.active.line;
+			const language      = activeEditor.document.languageId;
+            const currentLineID = activeEditor.document.lineAt(line);
+            
+			let currentLine        = activeEditor.document.lineAt(line).text;
+			let tabs               = currentLine.match(/^([ \t]+)/) || "";
+			if  (tabs !== "") tabs = tabs[0];
+
+			if (selection.start.character !== selection.end.character)
+                currentLine = activeEditor.document.getText(selection);
+                
+			if (currentLine.replace(/[\t ]/g,"").length === 0) {
+				currentLine = activeEditor.document.lineAt(line + 1).text;
+				line = line + 2;
+            }
+            
+			let current = currentLine.match(/(\w(\w+| ))+/) || currentLine;
 			if (current != currentLine) current = current[0];
+			currentLine = currentLine.trim();
 
-			let tabs = currentLine.match(/^([ \t]+)/) || "";
-			if (tabs !== "") tabs = tabs[0];
 			let text = settings[language] || settings["plaintext"];
+
 			text = tabs + text;
 			text = text.replace(/\{count\}/g, count);
 			text = text.replace(/\{line\}/g, (line + 1));
 			text = text.replace(/\{current\}/g, current);
+
 			vscode.window.activeTextEditor.edit((editBuilder) => {
-				editBuilder.insert(currentLineID.range.end, `\r\n${text}`);
+				editBuilder.insert(currentLineID.range.end, `\n${text}`);
 			});
 		}
 	});

@@ -9,7 +9,7 @@
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [
+	"activationEvents": [ 
 		"onCommand:extension.addConsoleLog"
 	],
 	"main": "./extension.js",
