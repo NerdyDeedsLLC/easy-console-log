@@ -13,7 +13,7 @@ function activate(context) {
 			settings = {
 				"javascript": `console.log("{count}: Line {line}, {current} ");`,
 				"php": `echo "{count}: Line {line}, {current}\\r\\n";`,
-				//"plaintext": `[DEBUG] {count}: Line {line}, {current}`,
+				"plaintext": `[DEBUG] {count}: Line {line}, {current}`,
 			};
 		}
 		if (!settings.hasOwnProperty('plaintext')) {
