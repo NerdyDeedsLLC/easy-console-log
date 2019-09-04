@@ -2,7 +2,9 @@
 	"name": "console-log-debugger",
 	"displayName": "Console Log Debugger",
 	"description": "Add console.log line with a shortcut for easy debugging",
-	"version": "0.0.1",
+    "version": "0.0.1",
+    "icon": "images/128.png",
+    "publisher": "farse",
 	"engines": {
 		"vscode": "^1.37.0"
 	},
@@ -34,5 +36,9 @@
 		"mocha": "^6.1.4",
 		"typescript": "^3.3.1",
 		"vscode-test": "^1.0.2"
-	}
+	},
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/Far-Se/easy-console-log.git"
+    }
 }
