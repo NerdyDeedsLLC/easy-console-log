@@ -7,12 +7,13 @@ function activate(context) {
 
 	let count = 0;
 	let disposable = vscode.commands.registerCommand('extension.addConsoleLog', function() {
+		
 
 		settings = vscode.workspace.getConfiguration().get('consoleLog.config');
 		if (!settings) {
 			settings = {
-				"javascript": `console.log("{count}: Line {line}, {current} ");`,
-				"php": `echo "{count}: Line {line}, {current}\\r\\n";`,
+				"javascript": `console.log("{count}: Line {line}, {current} ", {current});`,
+				"php": `echo "{count}: Line {line}, {current}\\r\\n"{current}\\r\\n;`,
 				"plaintext": `[DEBUG] {count}: Line {line}, {current}`,
 			};
 		}
